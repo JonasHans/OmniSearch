@@ -1,0 +1,51 @@
+{
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "topic_flag": {
+          "type": "keyword"
+        },
+        "lewis_split": {
+          "type": "keyword"
+        },
+        "cgi_cplit": {
+          "type": "keyword"
+        },
+        "old_id": {
+          "type": "keyword"
+        },
+        "new_id": {
+          "type": "keyword"
+        },
+        "date": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss.SS"
+        },
+        "topics": {
+          "type": "keyword"
+        },
+        "places": {
+          "type": "keyword"
+        },
+        "people": {
+          "type": "keyword"
+        },
+        "orgs": {
+          "type": "keyword"
+        },
+        "exchanges": {
+          "type": "keyword"
+        },
+        "title": {
+          "type": "text"
+        },
+        "date_line": {
+          "type": "text"
+        },
+        "body": {
+          "type": "text"
+        }
+      }
+    }
+  }
+}
