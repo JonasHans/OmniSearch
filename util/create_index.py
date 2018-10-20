@@ -17,5 +17,7 @@ with open('mapping.json', 'r') as f:
 # PUT new index with specified mapping
 r = requests.put(BASE_URL+INDEX_NAME, headers=HEADERS, data=payload)
 
+if r.status_code is not 200:
+    raise Exception("Index creation error", r.content)
 # Print response for validation
 print(r.content)
