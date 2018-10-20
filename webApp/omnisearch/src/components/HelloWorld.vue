@@ -1,20 +1,35 @@
 <template>
     <div class="hello">
 
-        <div>
-            <input v-model="query"/>
-            <button v-on:click="basicSearch">Search</button>
+        <div id="basic">
+            <div>
+                <input v-model="query"/>
+                <button v-on:click="basicSearch">Search</button>
+            </div>
         </div>
-        <ul v-for="result in resultList">
-            <li>{{ result._source.title }}</li>
-        </ul>
+        <div id="advanced">
+            title:
+            <input v-model="advancedQuery.title" aria-label="Title"/><br/>
+            body:
+            <input v-model="advancedQuery.body" aria-label="Body"/>
+            <!--TODO date pickers from/to-->
+            <!--TODO date pickers from/to-->
+            <button v-on:click="advancedSearch">Search</button>
 
+        </div>
+        <div id="resultlist">
+            <ul v-for="result in resultList">
+                <li><a :href="'http://localhost:9200/reuters/_doc/' + result._source.new_id">{{ result._source.title
+                    }}</a></li>
+            </ul>
+        </div>
     </div>
 
 
 </template>
 
 <script>
+  var esb = require('elastic-builder')
   var elasticsearch = require('elasticsearch')
   var client = new elasticsearch.Client({
     host: 'localhost:9200',
@@ -29,7 +44,13 @@
     data: () => {
       return {
         resultList: null,
-        query: 'oil'
+        query: 'oil',
+        advancedQuery: {
+          title: null,
+          body: null,
+          from: null,
+          to: null
+        }
       }
     },
     methods: {
@@ -40,6 +61,24 @@
         }).then((body) => {
           this.$data.resultList = body.hits.hits
         })
+      },
+
+      advancedSearch: () => {
+        // Misschien must ipv should? (and/or)
+        let query =
+          esb.requestBodySearch(esb.query(
+            esb.boolQuery().should([
+              esb.matchQuery('title', this.$data.advancedQuery.title),
+              esb.matchQuery('full_text', this.$data.advancedQuery.body)
+            ])))
+
+        client.search({
+          index: 'reuters',
+          body: query.toJSON()
+        }).then((body) => {
+            this.data.resultList = body.hits.hits
+          })
+
       }
     },
     created: function () {

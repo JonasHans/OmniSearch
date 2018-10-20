@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "vue": "^2.5.17",
-    "elasticsearch":"^15.1.1"
+    "elasticsearch":"^15.1.1",
+    "elastic-builder": "^2.2.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.1",
