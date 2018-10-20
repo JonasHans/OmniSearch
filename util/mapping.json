@@ -37,17 +37,16 @@
           "type": "keyword"
         },
         "title": {
-          "type": "text"
+          "type": "text",
+          "store": true
         },
         "date_line": {
           "type": "text"
         },
         "body": {
-          "type": "text"
-	    },
-		"entire_text": {
-			"type": "text"
-		}
+          "type": "text",
+          "store": true
+        }
       }
     }
   }
