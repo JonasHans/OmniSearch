@@ -95,6 +95,5 @@ def indexReuters():
 
     print(totalDocuments, "documents successfully indexed, total time was", str(time.time() - totalTimeStart), "seconds.")
 
-
 if __name__ == "__main__":
     indexReuters()
