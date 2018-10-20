@@ -52,7 +52,7 @@ def indexReuters():
                 "orgs": doc.orgs.get_text(),
                 "exchanges": doc.exchanges.get_text(),
                 # Text is build in function so find is needed
-                # "entire_text": doc.find("text").get_text()
+                "entire_text": doc.find("text").get_text()
             }
 
             # Optional Tags

@@ -46,6 +46,10 @@
         "body": {
           "type": "text",
           "store": true
+        },
+        "entire_text" :{
+          "type": "text",
+          "store": true
         }
       }
     }
