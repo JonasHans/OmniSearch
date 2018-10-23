@@ -1,12 +1,13 @@
 <template>
     <div class="hello">
 
-        <div id="basic">
-            <div>
-                <input v-model="query"/>
-                <button v-on:click="basicSearch">Search</button>
-            </div>
-        </div>
+        <!-- TODO als we eerst advanced search maken met alle features stiften we deze daarna door naar de simpele versie-->
+        <!--<div id="basic">-->
+        <!--<div>-->
+        <!--<input v-model="query"/>-->
+        <!--<button v-on:click="basicSearch">Search</button>-->
+        <!--</div>-->
+        <!--</div>-->
         <div id="advanced">
             title:
             <input v-model="advancedQuery.title" aria-label="Title"/><br/>
@@ -19,9 +20,22 @@
 
         </div>
         <div id="resultlist">
-            <ul v-for="result in resultList" v-bind:key="result._source.new_id">
-                <li><a :href="'http://localhost:9200/reuters/_doc/'
-                 + result._source.new_id">{{ result._source.title}}</a></li>
+            <ul>
+                <!-- TODO opmaak zoekresultaat, incl andere velden  -->
+                <li v-for="result in resultList" v-bind:key="result._source.new_id">
+                    <a :href="'http://localhost:9200/reuters/_doc/' + result._source.new_id">
+                        {{ result._source.title}}
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+
+        <div id="topiclist">
+            <ul>
+                <li v-for="topic in categories.topics" v-bind:key="topic.key">
+                        {{ topic.key}} {{topic.doc_count}}
+                </li>
             </ul>
         </div>
     </div>
@@ -49,8 +63,18 @@
                 advancedQuery: {
                     title: null,
                     body: null,
+                    // Deze default waarden komen overeen met dataset
                     from: "01-01-1987",
                     to: "31-12-1987"
+                    // Lijsten om categorie
+
+                },
+                categories: {
+                    exchanges: [],
+                    orgs: [],
+                    people: [],
+                    places: [],
+                    topics: []
                 }
             }
         },
@@ -91,20 +115,44 @@
                 }
 
                 // Histogram aggregatie
-                const agg = esb.dateHistogramAggregation("hitsByDay").field("date").interval("day")
+                const dateHistoAgg = esb.dateHistogramAggregation("hitsByDay").field("date").interval("day")
+
+                // Hier aggregeren we alle categorie termen van de resultaten van de query
+                const topicsAgg = esb.termsAggregation("topicsAgg", "topics").size(20)
+                // const exchangesAgg = esb.termsAggregation("exchangesAgg", "exchanges").size(1000)
+                // const orgsAgg = esb.termsAggregation("orgsAgg", "orgs").size(1000)
+                // const peopleAgg = esb.termsAggregation("peopleAgg", "people").size(1000)
+                // const placesAgg = esb.termsAggregation("placesAgg", "places").size(1000)
+
+
+                // Container object voor alle aggregaties
+                // const aggs = esb.aggregations(dateHistoAgg, topicsAgg, exchangesAgg, orgsAgg, peopleAgg, placesAgg)
+
+
+                // TODO wordcloud aggregatie
                 // Wordcloud -> https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-significanttext-aggregation.html ???
 
-                const requestBody = esb.requestBodySearch().query(
-                    boolQuery
-                ).aggregation(agg)
-                // zo kan je pagineren
-                    .size(10).from(0)
+                const requestBody = esb.requestBodySearch()
+                    .query(boolQuery)
+                    .aggregation(dateHistoAgg)
+                    .aggregation(topicsAgg)
+                    // .aggregation(exchangesAgg)
+                    // .aggregation(orgsAgg)
+                    // .aggregation(peopleAgg)
+                    // .aggregation(placesAgg)
+                    // zo kan je pagineren, zou invloed kunnen hebben op aggregaties (TODO uitzoeken)
+                    .size(10)
+                    .from(0)
 
                 client.search({
                     index: 'reuters',
                     body: requestBody.toJSON()
                 }).then((body) => {
                     this.resultList = body.hits.hits
+                    this.categories.topics = []
+                    this.categories.topics = body.aggregations.topicsAgg.buckets
+
+
                 })
 
             }
@@ -118,21 +166,4 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-    h3 {
-        margin: 40px 0 0;
-    }
-
-    ul {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    li {
-        display: inline-block;
-        margin: 0 10px;
-    }
-
-    a {
-        color: #42b983;
-    }
 </style>
