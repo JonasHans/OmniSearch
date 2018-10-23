@@ -75,6 +75,13 @@
                     people: [],
                     places: [],
                     topics: []
+                },
+                selectedCategories: {
+                    exchanges: [],
+                    orgs: [],
+                    people: [],
+                    places: [],
+                    topics: []
                 }
             }
         },
@@ -140,7 +147,7 @@
                     // .aggregation(orgsAgg)
                     // .aggregation(peopleAgg)
                     // .aggregation(placesAgg)
-                    // zo kan je pagineren, zou invloed kunnen hebben op aggregaties (TODO uitzoeken)
+                    // zo kan je pagineren
                     .size(10)
                     .from(0)
 
