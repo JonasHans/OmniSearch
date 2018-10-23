@@ -126,15 +126,10 @@
 
                 // Hier aggregeren we alle categorie termen van de resultaten van de query
                 const topicsAgg = esb.termsAggregation("topicsAgg", "topics").size(20)
-                // const exchangesAgg = esb.termsAggregation("exchangesAgg", "exchanges").size(1000)
-                // const orgsAgg = esb.termsAggregation("orgsAgg", "orgs").size(1000)
-                // const peopleAgg = esb.termsAggregation("peopleAgg", "people").size(1000)
-                // const placesAgg = esb.termsAggregation("placesAgg", "places").size(1000)
-
-
-                // Container object voor alle aggregaties
-                // const aggs = esb.aggregations(dateHistoAgg, topicsAgg, exchangesAgg, orgsAgg, peopleAgg, placesAgg)
-
+                // const exchangesAgg = esb.termsAggregation("exchangesAgg", "exchanges").size(20)
+                // const orgsAgg = esb.termsAggregation("orgsAgg", "orgs").size(20)
+                // const peopleAgg = esb.termsAggregation("peopleAgg", "people").size(20)
+                // const placesAgg = esb.termsAggregation("placesAgg", "places").size(20)
 
                 // TODO wordcloud aggregatie
                 // Wordcloud -> https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-significanttext-aggregation.html ???
