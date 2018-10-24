@@ -1,84 +1,67 @@
 <template>
     <b-container fluid>
         <!-- TODO als we eerst advanced search maken met alle features stiften we deze daarna door naar de simpele versie-->
-        <!--<div id="basic">-->
-        <!--<div>-->
-        <!--<input v-model="query"/>-->
-        <!--<button v-on:click="basicSearch">Search</button>-->
-        <!--</div>-->
-        <!--</div>-->
 
 		<b-row class="justify-content-md-center my-1">
-			<b-col lg="2">
-				<label for="title">Title</label>
+			<b-col lg="5">
+				<b-form-input v-model="advancedQuery.query" id="query"></b-form-input>
 			</b-col>
-			<b-col lg="4">
-				<b-form-input v-model="advancedQuery.title" id="title"></b-form-input>
+			<b-button v-on:click="search">Search</b-button>
+		</b-row>
+
+		<a href="#" v-b-toggle.accordion1 @click="toggleAccordion">Advanced search</a>
+
+		<b-row class="justify-content-md-center">
+			<b-col lg="6">
+				<b-collapse id="accordion1" :v-model="accordionVisible" accordion="my-accordion" role="tabpanel">
+					<b-card-body>
+						<b-row class="justify-content-md-center my-1">
+							<b-col lg="3">
+								<label for="title">Title</label>
+							</b-col>
+							<b-col lg="8">
+								<b-form-input v-model="advancedQuery.title" id="title"></b-form-input>
+							</b-col>
+						</b-row>
+
+						<b-row class="justify-content-md-center my-1">
+							<b-col lg="3">
+								<label for="body">Body</label>
+							</b-col>
+							<b-col lg="8">
+								<b-form-input v-model="advancedQuery.body" id="body"></b-form-input>
+							</b-col>
+						</b-row>
+
+						<b-row class="justify-content-md-center my-1">
+							<b-col lg="3">
+								<label for="date-from">Date range</label>
+							</b-col>
+							<b-col lg="3">
+								<b-form-input v-model="advancedQuery.from" id="date-from"></b-form-input>
+							</b-col>
+							<b-col lg="2">
+							-
+							</b-col>
+							<b-col lg="3">
+								<b-form-input v-model="advancedQuery.to" id="date-to"></b-form-input>
+							</b-col>
+						</b-row>
+					</b-card-body>
+				</b-collapse>
 			</b-col>
 		</b-row>
 
-		<b-row class="justify-content-md-center my-1">
-			<b-col lg="2">
-				<label for="body">Body</label>
-			</b-col>
-			<b-col lg="4">
-				<b-form-input v-model="advancedQuery.body" id="body"></b-form-input>
-			</b-col>
-		</b-row>
+		<SearchResults :categories="categories" :results="resultList"></SearchResults>
 
-		<b-row class="justify-content-md-center my-1">
-			<b-col lg="2">
-				<label for="date-from">Date range</label>
-			</b-col>
-			<b-col lg="2">
-				<b-form-input type='date' :value="advancedQuery.from" id="date-from"></b-form-input>
-			</b-col>
-			-
-			<b-col lg="2">
-				<b-form-input type='date' v-model="advancedQuery.to" id="date-to"></b-form-input>
-			</b-col>
-		</b-row>
-
-		<br />
-
-		<b-row class="justify-content-md-center my-1">
-			<b-button v-on:click="advancedSearch">Search</b-button>
-		</b-row>
-
-        <!-- <div id="advanced">
-            title:
-            <input v-model="advancedQuery.title" aria-label="Title"/><br/>
-            body:
-            <input v-model="advancedQuery.body" aria-label="Body"/>
-            <input v-model="advancedQuery.from" aria-label="Body"/>
-            <input v-model="advancedQuery.to" aria-label="Body"/>
-            <b-button v-on:click="advancedSearch">Search</b-button>
-        </div> -->
-        <div id="resultlist">
-            <ul>
-                <!-- TODO opmaak zoekresultaat, incl andere velden  -->
-                <li v-for="result in resultList" v-bind:key="result._source.new_id">
-                    <a :href="'http://localhost:9200/reuters/_doc/' + result._source.new_id">
-                        {{ result._source.title}}
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-
-        <div id="topiclist">
-            <ul>
-                <li v-for="topic in categories.topics" v-bind:key="topic.key">
-                        {{ topic.key}} {{topic.doc_count}}
-                </li>
-            </ul>
-        </div>
     </b-container>
 
 
 </template>
 
 <script>
+	import SearchResults from './../components/SearchResults.vue'
+
     var esb = require('elastic-builder')
     var elasticsearch = require('elasticsearch')
     var client = new elasticsearch.Client({
@@ -88,14 +71,16 @@
 
     export default {
         name: 'OmniSearch',
-        props: {
-            msg: String
-        },
+		components: {
+			SearchResults
+		},
         data: () => {
             return {
                 resultList: null,
-                query: 'oil',
+                query: '',
+				accordionVisible : false,
                 advancedQuery: {
+					query: null,
                     title: null,
                     body: null,
                     // Deze default waarden komen overeen met dataset
@@ -121,6 +106,14 @@
             }
         },
         methods: {
+			search: function () {
+				if (this.accordionVisible) {
+					this.advancedSearch()
+				} else {
+					this.basicSearch()
+				}
+			},
+
             basicSearch: function () {
                 client.search({
                     index: 'reuters',
@@ -192,7 +185,10 @@
 
                 })
 
-            }
+            },
+			toggleAccordion: function(){
+				this.accordionVisible = !this.accordionVisible
+			}
         },
         created: function () {
             // this.basicSearch()
