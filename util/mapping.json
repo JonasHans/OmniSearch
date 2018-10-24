@@ -19,7 +19,7 @@
         },
         "date": {
           "type": "date",
-          "format": "dd-MMM-yyyy HH:mm:ss.SS"
+          "format": "dd-MMM-yyyy HH:mm:ss.SS||dd-MM-yyyy"
         },
         "topics": {
           "type": "keyword"
@@ -37,17 +37,20 @@
           "type": "keyword"
         },
         "title": {
-          "type": "text"
+          "type": "text",
+          "store": true
         },
         "date_line": {
           "type": "text"
         },
         "body": {
-          "type": "text"
-	    },
-		"entire_text": {
-			"type": "text"
-		}
+          "type": "text",
+          "store": true
+        },
+        "entire_text" :{
+          "type": "text",
+          "store": true
+        }
       }
     }
   }
