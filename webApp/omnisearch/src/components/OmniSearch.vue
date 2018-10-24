@@ -1,6 +1,5 @@
 <template>
-    <div class="hello">
-
+    <b-container fluid>
         <!-- TODO als we eerst advanced search maken met alle features stiften we deze daarna door naar de simpele versie-->
         <!--<div id="basic">-->
         <!--<div>-->
@@ -8,17 +7,53 @@
         <!--<button v-on:click="basicSearch">Search</button>-->
         <!--</div>-->
         <!--</div>-->
-        <div id="advanced">
+
+		<b-row class="justify-content-md-center my-1">
+			<b-col lg="2">
+				<label for="title">Title</label>
+			</b-col>
+			<b-col lg="4">
+				<b-form-input v-model="advancedQuery.title" id="title"></b-form-input>
+			</b-col>
+		</b-row>
+
+		<b-row class="justify-content-md-center my-1">
+			<b-col lg="2">
+				<label for="body">Body</label>
+			</b-col>
+			<b-col lg="4">
+				<b-form-input v-model="advancedQuery.body" id="body"></b-form-input>
+			</b-col>
+		</b-row>
+
+		<b-row class="justify-content-md-center my-1">
+			<b-col lg="2">
+				<label for="date-from">Date range</label>
+			</b-col>
+			<b-col lg="2">
+				<b-form-input type='date' :value="advancedQuery.from" id="date-from"></b-form-input>
+			</b-col>
+			-
+			<b-col lg="2">
+				<b-form-input type='date' v-model="advancedQuery.to" id="date-to"></b-form-input>
+			</b-col>
+		</b-row>
+
+		<br />
+
+		<b-row class="justify-content-md-center my-1">
+			<b-button v-on:click="advancedSearch">Search</b-button>
+		</b-row>
+
+        <!-- <div id="advanced">
             title:
             <input v-model="advancedQuery.title" aria-label="Title"/><br/>
             body:
             <input v-model="advancedQuery.body" aria-label="Body"/>
             <input v-model="advancedQuery.from" aria-label="Body"/>
             <input v-model="advancedQuery.to" aria-label="Body"/>
-            <!--TODO date pickers from/to-->
-            <button v-on:click="advancedSearch">Search</button>
-
-        </div>
+            <b-button v-on:click="advancedSearch">Search</b-button>
+        </div> -->
         <div id="resultlist">
             <ul>
                 <!-- TODO opmaak zoekresultaat, incl andere velden  -->
@@ -38,7 +73,7 @@
                 </li>
             </ul>
         </div>
-    </div>
+    </b-container>
 
 
 </template>

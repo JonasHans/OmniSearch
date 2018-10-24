@@ -23,7 +23,7 @@ Search engine using elastic search.
 - VueJS framework setup
 - Basic query (disabled)
 - Advanced query (title, body, range(from, to))
-- Date histogrom api call
+- Date histogram api call
 - Category aggregation call for faceted search
 - Bottle of wine
 
