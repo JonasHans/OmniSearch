@@ -1,30 +1,16 @@
 <template>
 	<div id="resultlist">
 
+		<column-chart v-if="histogram.length !== 0" :data="chartData"></column-chart>
+
 		<div class="text-left result-list">
 				<wordcloud
 					:data="wordcloud"
 					nameKey="key"
 					valueKey="score">
 				</wordcloud>
-			<div class="card result-card" v-for="result in results" v-bind:key="result._source.new_id">
-				<div class="card-header bg-secondary text-white">
-					{{result._source.title}}
-
-					<b-button @click="wordCloud" variant='warning' class="button-right">Word cloud</b-button>
-				</div>
-
-				<div class="card-body">
-					<div v-if="wordCloudVis">
-					</div>
-					<div v-else>
-						{{result}}
-					</div>
-				</div>
-
-				<div class="card-footer">
-					<small class="text-muted">Timestamp: {{result._source.date}}</small>
-				</div>
+			<div v-for="result in results" v-bind:key="result._source.new_id">
+				<result :result="result"></result>
 			</div>
 		</div>
 	</div>
@@ -32,25 +18,50 @@
 
 <script>
 	import wordcloud from 'vue-wordcloud'
+	import result from './result.vue'
 
 	export default {
 		name : 'SearchResults',
 		props : {
 			results : Array,
-			categories : Object,
+			histogram: Array,
 			wordcloud: Array
 		},
 		components : {
-			wordcloud
+			wordcloud,
+			result
+		},
+		computed : {
+			chartData: function() {
+				let data = {}
+				for (let i = 0; i < this.histogram.length; i++) {
+					let hitDate = this.histogram[i]['key_as_string'].split(" ")[0]
+					let hitCount = this.histogram[i]['doc_count']
+					data[hitDate] = hitCount
+				}
+
+				return data
+			}
 		},
 		data: () => {
 			return {
-				wordCloudVis : false
+				wordCloudVis : false,
+				words: []
 			}
 		},
 		methods : {
 			wordCloud: function() {
 				this.wordCloudVis = !this.wordCloudVis
+			},
+			summary: function(all){
+				let text = all.split(" ")
+				let sum = ""
+
+				for (let x in text.slice(0, 100)){
+					sum += " " + text.slice(0, 100)[x]
+				}
+
+				return sum + "..."
 			}
 		}
 	}

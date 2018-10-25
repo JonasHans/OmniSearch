@@ -54,7 +54,7 @@
         <b-row>
 
             <b-col>
-                <SearchResults :categories="categories" :results="resultList" :wordcloud="wordCloud"></SearchResults>
+                <SearchResults :histogram="dateHistory" :results="resultList" :wordcloud="wordCloud"></SearchResults>
             </b-col>
 
 
@@ -130,7 +130,7 @@
                     places: [],
                     topics: []
                 },
-                dateHistory: {},
+                dateHistory: [],
                 wordCloud: []
             }
         },
@@ -202,6 +202,7 @@
 
                 const requestBody = esb.requestBodySearch()
                     .query(boolQuery)
+					.minScore(1.5)
                     .aggregation(dateHistoAgg)
                     .aggregation(topicsAgg)
                     .aggregation(significantTextAgg)
@@ -219,11 +220,12 @@
                 }).then((body) => {
                     this.resultList = body.hits.hits
                     this.categories.topics = body.aggregations.topicsAgg.buckets
+					this.dateHistory = body.aggregations.hitsByDay.buckets
                     this.categories.exchanges = body.aggregations.exchangesAgg.buckets
                     this.categories.people = body.aggregations.peopleAgg.buckets
                     this.categories.places = body.aggregations.placesAgg.buckets
                     this.categories.orgs = body.aggregations.orgsAgg.buckets
-                    this.dateHistory = body.aggregations.dateHistoAgg
+                    this.dateHistory = body.aggregations.hitsByDay.buckets
                     this.wordCloud = body.aggregations.wordcloudSampler.wordCloud.buckets
 
                 })

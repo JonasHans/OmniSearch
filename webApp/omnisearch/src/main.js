@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import App from './App.vue'
+import VueChartkick from 'vue-chartkick'
+import Chart from 'chart.js'
 
-// Wordcloud component
-// Vue.component(VueWordCloud.name, VueWordCloud);
+Vue.use(VueChartkick, {adapter: Chart})
 
 // Bootstrap 4
 import BootstrapVue from 'bootstrap-vue'
