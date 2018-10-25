@@ -5,30 +5,13 @@
 
 		<div class="text-left result-list">
 				<wordcloud
-					:data="words"
-					nameKey="name"
-					valueKey="value">
+					:data="wordcloud"
+					nameKey="key"
+					valueKey="score">
 				</wordcloud>
 			<div v-for="result in results" v-bind:key="result._source.new_id">
 				<result :result="result"></result>
 			</div>
-		</div>
-
-		<ul>
-			<!-- TODO opmaak zoekresultaat, incl andere velden  -->
-			<li v-for="result in results" v-bind:key="result._source.new_id">
-				<a :href="'http://localhost:9200/reuters/_doc/' + result._source.new_id">
-					{{ result._source.title}}
-				</a>
-			</li>
-		</ul>
-
-		<div id="topiclist">
-			<ul>
-				<li v-for="topic in categories.topics" v-bind:key="topic.key">
-						{{ topic.key}} {{topic.doc_count}}
-				</li>
-			</ul>
 		</div>
 	</div>
 </template>
@@ -41,8 +24,8 @@
 		name : 'SearchResults',
 		props : {
 			results : Array,
-			categories : Object,
-			histogram: Array
+			histogram: Array,
+			wordcloud: Array
 		},
 		components : {
 			wordcloud,
