@@ -3,9 +3,9 @@
 
 		<div class="text-left result-list">
 				<wordcloud
-					:data="words"
-					nameKey="name"
-					valueKey="value">
+					:data="wordcloud"
+					nameKey="key"
+					valueKey="score">
 				</wordcloud>
 			<div class="card result-card" v-for="result in results" v-bind:key="result._source.new_id">
 				<div class="card-header bg-secondary text-white">
@@ -54,7 +54,8 @@
 		name : 'SearchResults',
 		props : {
 			results : Array,
-			categories : Object
+			categories : Object,
+			wordcloud: Array
 		},
 		components : {
 			wordcloud

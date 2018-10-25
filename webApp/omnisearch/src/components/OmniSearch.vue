@@ -4,7 +4,7 @@
 
 		<b-row class="justify-content-md-center my-1">
 			<b-col lg="5">
-				<b-form-input v-model="advancedQuery.query" id="query"></b-form-input>
+				<b-form-input v-model="query" id="query"></b-form-input>
 			</b-col>
 			<b-button @click="search">Search</b-button>
 		</b-row>
@@ -52,7 +52,7 @@
 			</b-col>
 		</b-row>
 
-		<SearchResults :categories="categories" :results="resultList"></SearchResults>
+		<SearchResults :categories="categories" :results="resultList" :wordcloud="wordCloud"></SearchResults>
 
     </b-container>
 
@@ -60,7 +60,7 @@
 </template>
 
 <script>
-	import SearchResults from './../components/SearchResults.vue'
+	import SearchResults from './SearchResults.vue'
 
     var esb = require('elastic-builder')
     var elasticsearch = require('elasticsearch')
@@ -78,15 +78,16 @@
             return {
                 resultList: null,
                 query: '',
-				accordionVisible : false,
+				accordionVisible : true,
                 advancedQuery: {
 					query: null,
                     title: null,
                     body: null,
                     // Deze default waarden komen overeen met dataset
                     from: "01-01-1987",
-                    to: "31-12-1987"
+                    to: "31-12-1987",
                     // Lijsten om categorie
+					topicFilter: []
 
                 },
                 categories: {
@@ -103,7 +104,8 @@
                     places: [],
                     topics: []
                 },
-				dateHistory : {}
+				dateHistory : {},
+                wordCloud: []
             }
         },
         methods: {
@@ -150,6 +152,10 @@
                     boolQuery.filter(range)
                 }
 
+                if (this.advancedQuery.topicFilter.length) {
+                    boolQuery.filter(esb.termsQuery('topic', this.advancedQuery.topicFilter))
+				}
+
                 // Histogram aggregatie
                 const dateHistoAgg = esb.dateHistogramAggregation("hitsByDay").field("date").interval("day")
 
@@ -160,15 +166,16 @@
                 // const peopleAgg = esb.termsAggregation("peopleAgg", "people").size(20)
                 // const placesAgg = esb.termsAggregation("placesAgg", "places").size(20)
 
-                // TODO wordcloud aggregatie
-				const textAgg = esb.significantTextAggregation("wordCloud", "title")
-                // Wordcloud -> https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-significanttext-aggregation.html ???
+                const textAgg = esb.significantTextAggregation("wordCloud", "entire_text").size(30)
+				const significantTextAgg = esb.samplerAggregation('wordcloudSampler')
+                    .shardSize(100)
+                    .aggregation(textAgg)
 
                 const requestBody = esb.requestBodySearch()
                     .query(boolQuery)
                     .aggregation(dateHistoAgg)
                     .aggregation(topicsAgg)
-					.aggregation(textAgg)
+					.aggregation(significantTextAgg)
                     // .aggregation(exchangesAgg)
                     // .aggregation(orgsAgg)
                     // .aggregation(peopleAgg)
@@ -182,9 +189,10 @@
                     body: requestBody.toJSON()
                 }).then((body) => {
                     this.resultList = body.hits.hits
-                    this.categories.topics = []
                     this.categories.topics = body.aggregations.topicsAgg.buckets
-					this.dateHistory = body.aggregations.wordCloud.buckets
+					this.dateHistory = body.aggregations.dateHistoAgg
+					this.wordCloud = body.aggregations.wordcloudSampler.wordCloud.buckets
+
                 })
             },
 			toggleAccordion: function(){
