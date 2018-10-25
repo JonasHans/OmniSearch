@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import App from './App.vue'
 
+// Wordcloud component
+// Vue.component(VueWordCloud.name, VueWordCloud);
+
 // Bootstrap 4
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'

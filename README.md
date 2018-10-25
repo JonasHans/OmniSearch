@@ -6,7 +6,7 @@ Search engine using elastic search.
 - Remove title/dateline from text to create new 'body'
 - Use topic aggregation to add filter to advanced query
 - Make component to show topic aggregation result list, hooking back in to filter
-- Reuse said component for other category information (people, exchanges, etc) <3 vue
+- Re-use said component for other category information (people, exchanges, etc) <3 vue
 - Visualize date histogram for query
 - Assemble wordcloud aggregation
 - Optional postprocessing of wordcloud result

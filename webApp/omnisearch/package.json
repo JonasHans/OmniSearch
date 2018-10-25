@@ -11,7 +11,9 @@
     "bootstrap-vue": "^2.0.0-rc.11",
     "elastic-builder": "^2.2.0",
     "elasticsearch": "^15.1.1",
-    "vue": "^2.5.17"
+    "vue": "^2.5.17",
+    "vue-wordcloud": "^1.0.2",
+    "vuewordcloud": "^18.7.11"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.1",

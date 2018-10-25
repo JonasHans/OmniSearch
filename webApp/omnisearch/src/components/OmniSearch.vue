@@ -6,7 +6,7 @@
 			<b-col lg="5">
 				<b-form-input v-model="advancedQuery.query" id="query"></b-form-input>
 			</b-col>
-			<b-button v-on:click="search">Search</b-button>
+			<b-button @click="search">Search</b-button>
 		</b-row>
 
 		<a href="#" v-b-toggle.accordion1 @click="toggleAccordion">Advanced search</a>
@@ -102,7 +102,8 @@
                     people: [],
                     places: [],
                     topics: []
-                }
+                },
+				dateHistory : {}
             }
         },
         methods: {
@@ -160,12 +161,14 @@
                 // const placesAgg = esb.termsAggregation("placesAgg", "places").size(20)
 
                 // TODO wordcloud aggregatie
+				const textAgg = esb.significantTextAggregation("wordCloud", "title")
                 // Wordcloud -> https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-significanttext-aggregation.html ???
 
                 const requestBody = esb.requestBodySearch()
                     .query(boolQuery)
                     .aggregation(dateHistoAgg)
                     .aggregation(topicsAgg)
+					.aggregation(textAgg)
                     // .aggregation(exchangesAgg)
                     // .aggregation(orgsAgg)
                     // .aggregation(peopleAgg)
@@ -181,10 +184,8 @@
                     this.resultList = body.hits.hits
                     this.categories.topics = []
                     this.categories.topics = body.aggregations.topicsAgg.buckets
-
-
+					this.dateHistory = body.aggregations.wordCloud.buckets
                 })
-
             },
 			toggleAccordion: function(){
 				this.accordionVisible = !this.accordionVisible
