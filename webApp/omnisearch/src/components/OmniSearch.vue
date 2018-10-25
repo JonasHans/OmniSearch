@@ -52,7 +52,7 @@
 			</b-col>
 		</b-row>
 
-		<SearchResults :categories="categories" :results="resultList"></SearchResults>
+		<SearchResults :histogram="dateHistory" :categories="categories" :results="resultList"></SearchResults>
 
     </b-container>
 
@@ -103,7 +103,7 @@
                     places: [],
                     topics: []
                 },
-				dateHistory : {}
+				dateHistory : []
             }
         },
         methods: {
@@ -161,11 +161,12 @@
                 // const placesAgg = esb.termsAggregation("placesAgg", "places").size(20)
 
                 // TODO wordcloud aggregatie
-				const textAgg = esb.significantTextAggregation("wordCloud", "title")
+				const textAgg = esb.significantTextAggregation("wordCloud", "entire_text")
                 // Wordcloud -> https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-significanttext-aggregation.html ???
 
                 const requestBody = esb.requestBodySearch()
                     .query(boolQuery)
+					.minScore(1.5)
                     .aggregation(dateHistoAgg)
                     .aggregation(topicsAgg)
 					.aggregation(textAgg)
@@ -184,7 +185,7 @@
                     this.resultList = body.hits.hits
                     this.categories.topics = []
                     this.categories.topics = body.aggregations.topicsAgg.buckets
-					this.dateHistory = body.aggregations.wordCloud.buckets
+					this.dateHistory = body.aggregations.hitsByDay.buckets
                 })
             },
 			toggleAccordion: function(){
