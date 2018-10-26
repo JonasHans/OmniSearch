@@ -1,8 +1,9 @@
 <template>
     <div v-show="isVisible">
         <b-card no-body>
-            <b-card-header>
-                <b-button v-on:click="toggleOpen">{{ name }}</b-button>
+            <b-card-header v-on:click="toggleOpen">
+				{{name}}
+                <!-- <b-button v-on:click="toggleOpen">{{ name }}</b-button> -->
                 <!--<b-button :v-b-toggle="'\'' + name +'\''">{{ name }}</b-button>-->
             </b-card-header>
             <b-collapse v-bind:visible="open" id="Topic" accordeon="accordeon1">
