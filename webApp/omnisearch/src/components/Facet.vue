@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-show="isVisible">
         <b-card no-body>
             <b-card-header>
                 <b-button v-on:click="toggleOpen">{{ name }}</b-button>
@@ -45,6 +45,11 @@
             },
             toggleOpen: function () {
                 this.open = !this.open
+            }
+        },
+        computed: {
+            isVisible: function () {
+                return this.categories.length > 0 || this.selectedCategories.length > 0
             }
         }
     }
