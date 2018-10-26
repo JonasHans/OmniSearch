@@ -4,7 +4,7 @@
 
 		<b-row class="justify-content-md-center my-1">
 			<b-col lg="5">
-				<b-form-input v-model="query" id="query"></b-form-input>
+				<b-form-input v-model="query" id="query" :disabled="accordionVisible"></b-form-input>
 			</b-col>
 			<b-button @click="search">Search</b-button>
 		</b-row>
@@ -168,39 +168,40 @@
 			},
 
 			basicSearch: function () {
-				client.search({
-					index: 'reuters',
-					q: this.query
-				}).then((body) => {
-					this.resultList = body.hits.hits
-				})
+				let boolquery = esb.boolQuery()
+				boolquery.must(esb.simpleQueryStringQuery(this.query))
+				this.executeSearch(boolquery)
 			},
 
 			advancedSearch: function () {
 
-				// Bool query kun je andere queries mee combineren: must, should, filter, must-not
-				let boolQuery = esb.boolQuery()
+                // Bool query kun je andere queries mee combineren: must, should, filter, must-not
+                let boolQuery = esb.boolQuery()
 
-				//
-				if (this.advancedQuery.title) {
-					boolQuery.should(esb.matchQuery('title', this.advancedQuery.title))
-				}
-				if (this.advancedQuery.body) {
-					boolQuery.should(esb.matchQuery('entire_text', this.advancedQuery.body))
-				}
+                //
+                if (this.advancedQuery.title) {
+                    boolQuery.should(esb.matchQuery('title', this.advancedQuery.title))
+                }
+                if (this.advancedQuery.body) {
+                    boolQuery.should(esb.matchQuery('entire_text', this.advancedQuery.body))
+                }
 
-				// Door dd-MM-yyyy aan de mapping toe te voegen kunnen we door zulke string range queries op datum doen
-				if (this.advancedQuery.from || this.advancedQuery.to) {
-					let range = esb.rangeQuery('date')
+                // Door dd-MM-yyyy aan de mapping toe te voegen kunnen we door zulke string range queries op datum doen
+                if (this.advancedQuery.from || this.advancedQuery.to) {
+                    let range = esb.rangeQuery('date')
 
-					if (this.advancedQuery.from) {
-						range.gt(this.advancedQuery.from)
-					}
-					if (this.advancedQuery.to) {
-						range.lte(this.advancedQuery.to)
-					}
-					boolQuery.filter(range)
-				}
+                    if (this.advancedQuery.from) {
+                        range.gt(this.advancedQuery.from)
+                    }
+                    if (this.advancedQuery.to) {
+                        range.lte(this.advancedQuery.to)
+                    }
+                    boolQuery.filter(range)
+                }
+                this.executeSearch(boolQuery)
+
+            },
+			executeSearch: function (boolQuery) {
 
 				// Facets
 				this.addFilter(boolQuery, this.selectedCategories.topics, "topics")
