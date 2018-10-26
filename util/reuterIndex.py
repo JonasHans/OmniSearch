@@ -79,15 +79,18 @@ def indexReuters():
                 "entire_text": doc.find("text").get_text()
             }
 
+
             # Optional Tags
             if doc.find('text').title:
                 document['title'] = doc.find('text').title.get_text()
+
+                document['entire_text'] = document['entire_text'].replace(document['title'],'')
+
             if doc.find('text').dateline:
                 document['date_line'] = doc.find('text').dateline.get_text()
+                document['entire_text'] = document['entire_text'].replace(document['date_line'], '')
             if doc.find('text').body:
                 document['body'] = doc.find('text').body.get_text()
-
-            # TODO: remove dateline and tile from entire text if applicable, use that as body instead
 
             # Bulk index are in the form of:
             # {index: { <meta data> }}
@@ -103,8 +106,8 @@ def indexReuters():
 
                 # Concatenating bulk index commands and documents to single string
                 bulkPayload = ''.join(bulkPayloadList)
-                response = requests.post(BULK_URL, data=bulkPayload, headers=BULK_HEADER)
 
+                response = requests.post(BULK_URL, data=bulkPayload, headers=BULK_HEADER)
                 # Error handling in case of failed bulk index
                 if response.status_code is not 200:
                     raise Exception('Indexing error', response.content)
