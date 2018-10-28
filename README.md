@@ -2,7 +2,7 @@
 OmniSearch is a search engine for the reuters dataset. This was the end project for the UvA course zoekmachines(2018/2019).
 
 ## Wiki
-Our wiki describes the different facets of the search engine in detail. You can find it [here](/wiki).
+Our wiki describes the different facets of the search engine in detail. You can find it [here](./wiki).
 
 ## Installation
 
