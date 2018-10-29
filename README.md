@@ -40,5 +40,5 @@ Assuming you have npm and NodeJs installed, you can run the following commands t
 ```
 node i
 npm install 
-npm run sere
+npm run serve
 ```
